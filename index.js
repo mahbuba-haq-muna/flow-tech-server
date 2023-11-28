@@ -29,6 +29,7 @@ async function run() {
 
     const featuredCollection = client.db("TechDb").collection("featured");
     const trendingCollection = client.db("TechDb").collection("trending");
+    const productCollection = client.db("TechDb").collection("products");
 
     // featured products related api
     app.get('/featured', async(req, res) =>{
@@ -39,6 +40,12 @@ async function run() {
     // trending products related api
     app.get('/trending', async(req, res) =>{
         const result = await trendingCollection.find().toArray()
+        res.send(result)
+    });
+
+    // all products related api
+    app.get('/products', async(req, res) =>{
+        const result = await productCollection.find().toArray()
         res.send(result)
     });
 
