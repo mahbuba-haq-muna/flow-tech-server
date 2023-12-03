@@ -82,21 +82,23 @@ async function run() {
         res.send({token})
     })
 
-    app.post('/myItems', verifyToken, async (req, res) =>{
+    // my items related api
+
+    app.post('/myItems',  async (req, res) =>{
         const query = req.body;
         console.log(query);
         const result = await itemCollection.insertOne(query);
         res.send(result)
     });
 
-    app.delete('/myItems/:id', verifyToken, async (req, res) => {
+    app.delete('/myItems/:id', async (req, res) => {
         const id = req.params.id;
         const query = { _id: new ObjectId(id) };
         const result = await itemCollection.deleteOne(query);
         res.send(result)
     });
 
-    app.get('/myItems/:id', verifyToken, async (req, res) => {
+    app.get('/myItems/:id',  async (req, res) => {
         const id = req.params.id;
         const query = { _id: new ObjectId(id) };
         const result = await itemCollection.findOne(query);
@@ -130,12 +132,12 @@ async function run() {
 
     // all products related api
     app.get('/products', async(req, res) =>{
-        // const filter = req.query.search
-        // console.log(filter)
-        // const query = {
-        //     tags:{ $regex: filter, $options: 'i'}
-        // }
-        const cursor = productCollection.find()
+        const filter = req.query.search
+        console.log(filter)
+        const query = {
+            tags: { $regex: new RegExp(filter, 'i') }
+        }
+        const cursor = productCollection.find(query)
         const result = await cursor.toArray()
         res.send(result)
     });
