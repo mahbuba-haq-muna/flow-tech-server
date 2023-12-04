@@ -105,6 +105,26 @@ async function run() {
         res.send(result)
     });
 
+    
+
+    app.patch('/myItems/:id', async (req, res) =>{
+        const items = req.body;
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const updatedDoc ={
+            $set: {
+                name: items.name,
+                link: items.link,
+                description: items.description,
+                image: items.display_url,
+                date: items.date
+            }
+        }
+        const result = await itemCollection.updateOne(query, updatedDoc);
+        res.send(result)
+
+    })
+
     app.get('/myItems', async(req, res) =>{
         const result = await itemCollection.find().toArray()
         res.send(result)
@@ -115,6 +135,15 @@ async function run() {
         const result = await featuredCollection.find().toArray()
         res.send(result)
     });
+
+    app.post('/featured',  async (req, res) =>{
+        const query = req.body;
+        console.log(query);
+        const result = await featuredCollection.insertOne(query);
+        res.send(result)
+    });
+
+    
     
 
     app.get('/featured/:id', async (req, res) => {
@@ -243,6 +272,19 @@ async function run() {
        
         const result = await userCollection.insertOne(user);
         res.send(result)
+    })
+
+    // stats analytical
+    app.get('/admin-stats', async (req, res) =>{
+        const users = await userCollection.estimatedDocumentCount();
+        const products = await productCollection.estimatedDocumentCount();
+        const reviews = await reviewCollection.estimatedDocumentCount()
+
+        res.send({
+            users,
+            products,
+            reviews
+        })
     })
 
     // Send a ping to confirm a successful connection
